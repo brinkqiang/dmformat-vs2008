@@ -1,0 +1,50 @@
+cmake_minimum_required(VERSION 2.8)
+
+PROJECT(dmformat)
+
+IF (WIN32)  
+    MESSAGE(STATUS "Now is windows")
+
+    SET(DMOS_NAME "win")
+
+    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )    
+ELSEIF (APPLE)  
+    MESSAGE(STATUS "Now is Apple systems")  
+
+    SET(DMOS_NAME "mac") 
+
+    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread" )
+ELSEIF (UNIX)  
+    MESSAGE(STATUS "Now is UNIX-like OS")  
+ 
+    SET(DMOS_NAME "lin") 
+    
+    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread" )    
+ENDIF ()
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/test)
+
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/lib/${DMOS_NAME})
+
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/${DMOS_NAME})
+
+FILE(GLOB_RECURSE SOURCES
+${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
+${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
+${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc
+${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
+ADD_LIBRARY(dmformat ${SOURCES})
+
+function(add_dmformat_test name)
+  add_executable(${name} ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.cc)
+  target_link_libraries(${name} dmformat)
+
+endfunction()
+
+add_dmformat_test("dmformattest")
